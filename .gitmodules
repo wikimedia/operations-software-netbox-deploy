@@ -3,4 +3,4 @@
 	url = https://gerrit.wikimedia.org/r/operations/software/netbox
 [submodule "wheels"]
 	path = wheels
-  url = https://gerrit.wikimedia.org/r/operations/wheels/netbox
+	url = https://gerrit.wikimedia.org/r/operations/wheels/netbox
