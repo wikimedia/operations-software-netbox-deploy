@@ -1,3 +1,0 @@
--r netbox/requirements.txt
-napalm
-django-auth-ldap

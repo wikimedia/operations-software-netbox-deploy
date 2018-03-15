@@ -6,15 +6,17 @@ set -o pipefail
 
 VENV=/srv/deployment/netbox/venv
 DEPLOY_DIR=/srv/deployment/netbox/deploy
-WHEEL_DIR=${DEPLOY_DIR}/wheels
-REQUIREMENTS=${DEPLOY_DIR}/requirements.txt
-
+WHEEL_DIR=${DEPLOY_DIR}/artifacts
+REQUIREMENTS=${DEPLOY_DIR}/frozen_requirements.txt
+DISTRO=$(lsb_release -sc)
 PIP=${VENV}/bin/pip
 
 # Ensure that the virtual environment exists
 mkdir -p $VENV
 virtualenv --python python3 $VENV || /bin/true
 
+# Extract the wheels
+(cd ${WHEEL_DIR} && tar --owner=$UID -zxvf "artifacts.${DISTRO}.tar.gz")
 # Install or upgrade all requirements from wheel cache
 $PIP install \
     --no-index \
