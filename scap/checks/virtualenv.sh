@@ -7,7 +7,7 @@ set -o pipefail
 VENV=/srv/deployment/netbox/venv
 DEPLOY_DIR=/srv/deployment/netbox/deploy
 WHEEL_DIR=${DEPLOY_DIR}/artifacts
-REQUIREMENTS=${DEPLOY_DIR}/frozen_requirements.txt
+REQUIREMENTS=${DEPLOY_DIR}/frozen-requirements.txt
 DISTRO=$(lsb_release -sc)
 PIP=${VENV}/bin/pip
 
