@@ -1,5 +1,12 @@
 ---
 checks:
+  linkconf:
+    type: command
+    stage: promote
+    timeout: 300
+    group: default
+    command: bash /srv/deployment/netbox/deploy/scap/checks/linkconf.sh
+
   virtualenv:
     type: command
     stage: promote
