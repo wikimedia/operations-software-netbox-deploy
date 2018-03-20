@@ -10,6 +10,6 @@ if [ ! -f ${DEPLOY_DIR}/netbox/netbox/netbox/configuration.py ]; then
 	ln -s /etc/netbox-configuration.py ${DEPLOY_DIR}/netbox/netbox/netbox/configuration.py
 fi
 
-if [ ! -f ${DEPLOY_DIR}/netbox/netbox/netbox/ldap_config.py.py ]; then
-    ln -s /etc/netbox-ldap.py ${DEPLOY_DIR}/netbox/netbox/netbox/ldap_config.py.py
+if [ ! -f ${DEPLOY_DIR}/netbox/netbox/netbox/ldap_config.py ]; then
+    ln -s /etc/netbox-ldap.py ${DEPLOY_DIR}/netbox/netbox/netbox/ldap_config.py
 fi
