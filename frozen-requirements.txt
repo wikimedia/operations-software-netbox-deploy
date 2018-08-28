@@ -38,7 +38,7 @@ py-gfm==0.1.3
 pyasn1==0.4.4
 pyasn1-modules==0.2.2
 pycparser==2.18
-pycryptodome==3.6.5
+pycryptodome==3.6.6
 pyeapi==0.8.2
 pyIOSXR==0.53
 PyNaCl==1.2.1
