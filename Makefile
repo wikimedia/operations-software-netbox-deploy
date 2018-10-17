@@ -31,7 +31,7 @@ clean:
 	- rm -rf .docker_built
 
 .docker_built: Dockerfile.build freeze_requirements.sh
-	docker pull $(IMG_BASENAME)-stretch:0.0.2
+	docker pull $(IMG_BASENAME)-stretch:latest
 	docker build -f Dockerfile.build -t netbox-build:local .
 	@touch $@
 

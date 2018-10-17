@@ -8,6 +8,9 @@ VENV=/srv/deployment/netbox/venv
 NETBOX_ROOT=/srv/deployment/netbox/deploy/netbox
 PYTHON=${VENV}/bin/python3
 
+# Delete stale bytecode
+find "${NETBOX_ROOT}" -name "*.pyc" -delete
+
 # Run database migration
 ${PYTHON} ${NETBOX_ROOT}/netbox/manage.py migrate
 
