@@ -5,7 +5,7 @@ set -o nounset
 set -o pipefail
 
 VENV=/srv/deployment/netbox/venv
-NETBOX_ROOT=/srv/deployment/netbox/deploy/netbox
+NETBOX_ROOT=/srv/deployment/netbox/deploy/src
 PYTHON=${VENV}/bin/python3
 
 # Delete stale bytecode
