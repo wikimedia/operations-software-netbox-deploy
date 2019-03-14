@@ -16,6 +16,7 @@ from configparser import ConfigParser
 
 import pynetbox.api
 import requests
+import requests.compat
 from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger()
@@ -69,11 +70,13 @@ def dictify_ganeti_host_list(host_list):
     return {i["name"].split(".")[0]: i for i in host_list}
 
 
-def get_ganeti_host_list(api_url, user, password):
+def get_ganeti_host_list(api_url, user, password, ca_cert):
     """Gets Instance list from Ganeti API"""
-    r = requests.get(api_url + "/2/instances?bulk=1", auth=HTTPBasicAuth(user, password))
+    r = requests.get(
+        requests.compat.url_join(api_url, "/2/instances?bulk=1"), auth=HTTPBasicAuth(user, password), verify=ca_cert
+    )
     if r.status_code != 200:
-        raise Exception("Can't access Ganeti API %s".format(result.status_code))
+        raise Exception("Can't access Ganeti API %s".format(r.status_code))
     return r.json()
 
 
@@ -197,6 +200,7 @@ def main():
     netbox_api = cfg["netbox"]["api"]
     netbox_cluster = cfg["profile:" + args.profile]["cluster"]
     ganeti_api = cfg["profile:" + args.profile]["api"]
+    ganeti_ca_cert = cfg["auth"]["ca_cert"]
 
     setup_logging(args.verbose)
 
@@ -212,7 +216,7 @@ def main():
         with open(args.in_json, "r") as in_json:
             ganeti_hosts_json = json.load(in_json)
     else:
-        ganeti_hosts_json = get_ganeti_host_list(ganeti_api, ganeti_user, ganeti_password)
+        ganeti_hosts_json = get_ganeti_host_list(ganeti_api, ganeti_user, ganeti_password, ganeti_ca_cert)
     ganeti_hosts = dictify_ganeti_host_list(ganeti_hosts_json)
     logger.debug("loaded %s instances from ganeti api", len(ganeti_hosts))
 
