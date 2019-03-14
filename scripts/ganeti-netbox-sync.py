@@ -73,7 +73,7 @@ def dictify_ganeti_host_list(host_list):
 def get_ganeti_host_list(api_url, user, password, ca_cert):
     """Gets Instance list from Ganeti API"""
     r = requests.get(
-        requests.compat.url_join(api_url, "/2/instances?bulk=1"), auth=HTTPBasicAuth(user, password), verify=ca_cert
+        requests.compat.urljoin(api_url, "/2/instances?bulk=1"), auth=HTTPBasicAuth(user, password), verify=ca_cert
     )
     if r.status_code != 200:
         raise Exception("Can't access Ganeti API %s".format(r.status_code))
