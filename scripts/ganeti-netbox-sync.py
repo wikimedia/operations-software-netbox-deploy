@@ -72,7 +72,7 @@ def setup_logging(verbose=False):
 
 def ganeti_rapi_query(endpoint, base_url, user, password, ca_cert):
     """Execute the GET verb on a specified Ganeti endpoint."""
-    target_url = '/'.join(base_url, '2', endpoint)
+    target_url = '/'.join((base_url.strip('/'), '2', endpoint))
     r = requests.get(
         target_url, auth=HTTPBasicAuth(user, password), verify=ca_cert
     )
@@ -202,7 +202,7 @@ def sync_ganeti_nodes_to_netbox(netbox_api, netbox_token, cluster_name, ganeti_n
                 logger.error("an error was raised trying to retrieve host %s: %s", node, e)
                 continue
 
-            if device:
+            if device is not None:
                 device.cluster = nb_cluster_id
                 if dry_run:
                     save_result = True
