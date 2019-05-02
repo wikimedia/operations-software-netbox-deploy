@@ -1,3 +1,4 @@
 build
 artifacts/*.whl
 .docker_built
+scap/log/
