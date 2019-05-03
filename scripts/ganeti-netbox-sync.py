@@ -38,7 +38,7 @@ def parse_command_line_args():
         help="the path of a JSON file with the output of the Ganeti RAPI `nodes` endpoint to process instead of accessing the API directly.",
     )
     parser.add_argument(
-        "-c", "--config", help="The path to the config file to load.", default="/etc/netbox-ganeti-sync.cfg"
+        "-c", "--config", help="The path to the config file to load.", default="/etc/netbox/ganeti-sync.cfg"
     )
     parser.add_argument(
         "-d", "--dry-run", help="Don't actually commit any changes, just do a dry-run", action="store_true"
@@ -73,15 +73,13 @@ def setup_logging(verbose=False):
 def ganeti_rapi_query(endpoint, base_url, user, password, ca_cert):
     """Execute the GET verb on a specified Ganeti endpoint."""
     target_url = '/'.join((base_url.strip('/'), '2', endpoint))
-    r = requests.get(
-        target_url, auth=HTTPBasicAuth(user, password), verify=ca_cert
-    )
+    r = requests.get(target_url, auth=HTTPBasicAuth(user, password), verify=ca_cert, timeout=30)
     if r.status_code != 200:
         raise Exception("Can't access Ganeti API %s %s".format(r.status_code, r.text))
     return r.json()
 
 
-def ganeti_host_to_netbox(ganeti_dict, additional_fields):
+def ganeti_host_to_netbox(ganeti_dict, virtual_machine_statuses, additional_fields):
     """Takes a single entry from the Ganeti host list and returns just the fields pertinent to Netbox
     along with any additional fields that need to be added"""
     shortname = ganeti_dict["name"].split(".")[0]
@@ -91,6 +89,11 @@ def ganeti_host_to_netbox(ganeti_dict, additional_fields):
         "memory": ganeti_dict["beparams"]["memory"],
         "disk": round(sum(ganeti_dict["disk.sizes"]) / 1024, 0),  # ganeti gives megabytes, netbox expects gigabytes
     }
+    # oper_state is the current state of the machine, which maps nicely to the status field.
+    if ganeti_dict["oper_state"]:
+        output['status'] = virtual_machine_statuses['Active']
+    else:
+        output['status'] = virtual_machine_statuses['Offline']
     output.update(additional_fields)
     return output
 
@@ -110,6 +113,10 @@ def sync_ganeti_netbox_host_diff(ganeti_host, netbox_host):
         logger.debug("updating disk on %s %d -> %d", netbox_host.name, netbox_host.disk, ganeti_host["disk"])
         netbox_host.disk = ganeti_host["disk"]
         updated = True
+    if netbox_host.status.value != ganeti_host["status"]:
+        logger.debug("updating status on %s %d -> %d", netbox_host.name, netbox_host.status.value, ganeti_host["status"])
+        netbox_host.status = ganeti_host["status"]
+        updated = True
 
     return updated
 
@@ -121,6 +128,8 @@ def sync_ganeti_to_netbox(netbox_api, netbox_token, cluster_name, ganeti_hosts, 
     nb_linux_id = nbapi.dcim.platforms.get(slug="linux").id
     nb_cluster_id = nbapi.virtualization.clusters.get(name=cluster_name).id
     nb_server_id = nbapi.dcim.device_roles.get(slug="server").id
+
+    nb_vhost_statuses = {ch['label']: ch['value'] for ch in nbapi.virtualization.choices()['virtual-machine:status']}
 
     nb_vhosts = {}
     # make a convenient dictionary of netbox hosts
@@ -136,7 +145,7 @@ def sync_ganeti_to_netbox(netbox_api, netbox_token, cluster_name, ganeti_hosts, 
             results["del"] += 1
         else:
             try:
-                ganeti_host = ganeti_host_to_netbox(ganeti_hosts[nb_host_name], {})
+                ganeti_host = ganeti_host_to_netbox(ganeti_hosts[nb_host_name], nb_vhost_statuses, {})
             except (KeyError, TypeError) as e:
                 logger.error(
                     "Host %s raised an exception when trying to convert to Netbox for syncing: %s", nb_host_name, e
@@ -163,7 +172,9 @@ def sync_ganeti_to_netbox(netbox_api, netbox_token, cluster_name, ganeti_hosts, 
 
         try:
             ganeti_host_dict = ganeti_host_to_netbox(
-                ganeti_host, {"cluster": nb_cluster_id, "platform": nb_linux_id, "role": nb_server_id}
+                ganeti_host,
+                nb_vhost_statuses,
+                {"cluster": nb_cluster_id, "platform": nb_linux_id, "role": nb_server_id},
             )
         except (KeyError, TypeError) as e:
             logger.error(
@@ -211,6 +222,7 @@ def sync_ganeti_nodes_to_netbox(netbox_api, netbox_token, cluster_name, ganeti_n
                         save_result = device.save()
                     except pynetbox.RequestError as e:
                         logger.error("an error was raised trying to save host %s: %s", node, e)
+                        continue
 
                 if save_result:
                     results["assign"] += 1
@@ -272,7 +284,9 @@ def main():
         with open(args.instances_json, "r") as in_json:
             ganeti_hosts_json = json.load(in_json)
     else:
-        ganeti_hosts_json = ganeti_rapi_query('instances?bulk=1', ganeti_api, ganeti_user, ganeti_password, ganeti_ca_cert)
+        ganeti_hosts_json = ganeti_rapi_query(
+            'instances?bulk=1', ganeti_api, ganeti_user, ganeti_password, ganeti_ca_cert
+        )
 
     # Convert instances JSON to a dict keyed by the host name
     ganeti_hosts = {i["name"].split(".")[0]: i for i in ganeti_hosts_json}
