@@ -1,5 +1,6 @@
 ## The following requirements were added by pip freeze:
 attrs==19.1.0
+cachetools==3.1.0
 certifi==2019.3.9
 chardet==3.0.4
 coreapi==2.3.3
@@ -17,7 +18,11 @@ django-taggit-serializer==0.1.7
 django-timezone-field==3.0
 djangorestframework==3.9.0
 drf-yasg==1.14.0
+google-api-python-client==1.7.8
+google-auth==1.6.3
+google-auth-httplib2==0.0.3
 graphviz==0.10.1
+httplib2==0.12.3
 idna==2.8
 inflection==0.3.1
 itypes==1.1.0
@@ -38,9 +43,10 @@ python-ldap==3.2.0
 pytz==2019.1
 PyYAML==5.1
 requests==2.21.0
+rsa==4.0
 ruamel.yaml==0.15.94
 six==1.12.0
 sqlparse==0.3.0
 swagger-spec-validator==2.4.3
 uritemplate==3.0.0
-urllib3==1.24.2
+urllib3==1.24.3
