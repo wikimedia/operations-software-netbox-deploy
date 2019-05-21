@@ -89,8 +89,8 @@ def ganeti_host_to_netbox(ganeti_dict, virtual_machine_statuses, additional_fiel
         "memory": ganeti_dict["beparams"]["memory"],
         "disk": round(sum(ganeti_dict["disk.sizes"]) / 1024, 0),  # ganeti gives megabytes, netbox expects gigabytes
     }
-    # oper_state is the current state of the machine, which maps nicely to the status field.
-    if ganeti_dict["oper_state"]:
+    # admin_state is the desired state of the machine, which maps nicely to the status field.
+    if ganeti_dict["admin_state"] == 'up':
         output['status'] = virtual_machine_statuses['Active']
     else:
         output['status'] = virtual_machine_statuses['Offline']
