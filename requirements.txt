@@ -1,2 +1,4 @@
 -r src/requirements.txt
 django-auth-ldap
+swift
+django-storage-swift
