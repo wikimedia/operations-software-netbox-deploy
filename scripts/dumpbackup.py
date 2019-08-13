@@ -343,7 +343,7 @@ def main():
         tables = {TABLE_ALIASES[x] if x in TABLE_ALIASES else x for x in args.tables}
 
     for table in tables:
-        HANDLERS.get(table, HANDLERS["*"])
+        handler = HANDLERS.get(table, HANDLERS["*"])
 
         logger.debug("Calling handler {} for {}".format(str(handler), table))
         data = handler(api, table)
