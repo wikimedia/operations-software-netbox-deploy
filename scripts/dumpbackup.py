@@ -1,4 +1,4 @@
-"""Dump various Netbox tables to CSV format."""
+# """Dump various Netbox tables to CSV format."""
 
 import argparse
 import csv
@@ -7,9 +7,11 @@ import json
 import logging
 import os
 import sys
+import time
 
 import pynetbox
 
+from functools import wraps
 from configparser import ConfigParser
 
 logger = logging.getLogger()
@@ -51,6 +53,33 @@ TABLE_ALIASES = {
     "devices_custom_fields": "dcim.devices.custom_fields",
     "virtual_machines_custom_fields": "virtualization.virtual_machines.custom_fields",
 }
+
+
+def retry(exception, attempts=1, cooldown=1):
+    """A decorator which will retry a runable and catch potential exceptions.
+
+    Arguments:
+       exception (class or tuple of classes): The exception class to catch
+       attempts (integer): the number of tries to attempt to run the function
+       cooldown (float): the number of seconds to sleep between attempts.
+    """
+
+    def retry_decorator(func):
+        @wraps(func)
+        def retry_internal(*args, **kwargs):
+            _attempts = attempts
+            while _attempts > 0:
+                try:
+                    return func(*args, **kwargs)
+                except exception as e:
+                    logger.info("%s failed with %s, try %d, retrying in %f seconds", func, e, _attempts, cooldown)
+                _attempts -= 1
+                time.sleep(cooldown)
+            return func(*args, **kwargs)
+
+        return retry_internal
+
+    return retry_decorator
 
 
 class DataTable:
@@ -177,6 +206,7 @@ def get_endpoint_obj(api, apipath):
     return app
 
 
+@retry(pynetbox.core.query.RequestError, attempts=3, cooldown=0.5)
 def handle_generic(api, tablename):
     """Return the data for a specific table name.
 
@@ -232,6 +262,7 @@ def process_custom_fields(customfields):
     return customfields
 
 
+@retry(pynetbox.core.query.RequestError, attempts=3, cooldown=0.5)
 def handle_custom_fields(api, tablename):
     """Return the data for the custom fields associated with a specific table.
 
@@ -261,6 +292,7 @@ def handle_custom_fields(api, tablename):
     return None
 
 
+@retry(pynetbox.core.query.RequestError, attempts=3, cooldown=0.5)
 def handle_devices_full(api, *args, **kwargs):
     """Return the data for the devices table.
 
@@ -275,32 +307,48 @@ def handle_devices_full(api, *args, **kwargs):
 
     """
     alldata = []
+
+    # Prefetch a bunch of dependency data.
+    racks = retry(pynetbox.core.query.RequestError)(api.dcim.racks.all)()
+    sites = retry(pynetbox.core.query.RequestError)(api.dcim.sites.all)()
+    site_data = {site.id: site.slug for site in sites}
+    rack_data = {rack.id: {"name": rack.name, "site": site_data[rack.site.id]} for rack in racks}
+    device_types = retry(pynetbox.core.query.RequestError)(api.dcim.device_types.all)()
+    device_type_data = {
+        device_type.id: {
+            "manufacturer": device_type.manufacturer.slug,
+            "height": device_type.u_height,
+            "slug": device_type.slug,
+        }
+        for device_type in device_types
+    }
     for device in api.dcim.devices.all():
         row = device.serialize()
-
         # Digest foreign keys into slugs or other useful things.
         if device.custom_fields:
             row["custom_fields"] = process_custom_fields(device.custom_fields)
-        del row["position"]
-        del row["rack"]
-        del row["face"]
-        if device.rack:
-            row["rack_site"] = device.rack.site.slug
-            row["rack_name"] = device.rack.name
+        if row["rack"]:
+            row["rack_site"] = rack_data[row["rack"]]["site"]
+            row["rack_name"] = rack_data[row["rack"]]["name"]
             if device.face:
                 row["rack_face"] = device.face.label
             row["rack_position"] = device.position
-        row["site"] = device.site.slug
+        row["site"] = site_data[row["site"]]
         if device.tenant:
             row["tenant"] = device.tenant.slug
-        row["device_type"] = device.device_type.slug
-        row["device_manufacturer"] = device.device_type.manufacturer.slug
-        row["device_height"] = device.device_type.u_height
+        row["device_manufacturer"] = device_type_data[row["device_type"]]["manufacturer"]
+        row["device_height"] = device_type_data[row["device_type"]]["height"]
+        row["device_type"] = device_type_data[row["device_type"]]["slug"]
         row["status"] = device.status.label
         del row["platform"]
         if device.platform:
             row["platform"] = device.platform.slug
         row["device_role"] = device.device_role.slug
+
+        del row["position"]
+        del row["rack"]
+        del row["face"]
+
         alldata.append(row)
 
     if alldata:
