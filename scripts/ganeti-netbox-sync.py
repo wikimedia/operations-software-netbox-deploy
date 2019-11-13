@@ -11,15 +11,43 @@ import json
 import logging
 import os
 import sys
+import time
 
 from collections import Counter
 from configparser import ConfigParser
+from functools import wraps
 
 import pynetbox.api
 import requests
 from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger()
+
+def retry(exception, attempts=1, cooldown=1):
+    """A decorator which will retry a runable and catch potential exceptions.
+
+    Arguments:
+       exception (class or tuple of classes): The exception class to catch
+       attempts (integer): the number of tries to attempt to run the function
+       cooldown (float): the number of seconds to sleep between attempts.
+    """
+
+    def retry_decorator(func):
+        @wraps(func)
+        def retry_internal(*args, **kwargs):
+            _attempts = attempts
+            while _attempts > 0:
+                try:
+                    return func(*args, **kwargs)
+                except exception as e:
+                    logger.info("%s failed with %s, try %d, retrying in %f seconds", func, e, _attempts, cooldown)
+                _attempts -= 1
+                time.sleep(cooldown)
+            return func(*args, **kwargs)
+
+        return retry_internal
+
+    return retry_decorator
 
 
 def parse_command_line_args():
@@ -70,6 +98,7 @@ def setup_logging(verbose=False):
     logger.setLevel(level)
 
 
+@retry(Exception)
 def ganeti_rapi_query(endpoint, base_url, user, password, ca_cert):
     """Execute the GET verb on a specified Ganeti endpoint."""
     target_url = '/'.join((base_url.strip('/'), '2', endpoint))
@@ -120,20 +149,22 @@ def sync_ganeti_netbox_host_diff(ganeti_host, netbox_host):
 
     return updated
 
-
+@retry(pynetbox.core.query.RequestError)
 def sync_ganeti_to_netbox(netbox_api, netbox_token, cluster_name, ganeti_hosts, dryrun):
     """Preform a sync from the Ganeti host list into the specified Netbox API destination."""
     nbapi = pynetbox.api(netbox_api, token=netbox_token)
 
-    nb_linux_id = nbapi.dcim.platforms.get(slug="linux").id
-    nb_cluster_id = nbapi.virtualization.clusters.get(name=cluster_name).id
-    nb_server_id = nbapi.dcim.device_roles.get(slug="server").id
+    nb_linux_id = retry(pynetbox.core.query.RequestError)(nbapi.dcim.platforms.get)(slug="linux").id
+    nb_cluster_id = retry(pynetbox.core.query.RequestError)(nbapi.virtualization.clusters.get)(name=cluster_name).id
+    nb_server_id = retry(pynetbox.core.query.RequestError)(nbapi.dcim.device_roles.get)(slug="server").id
 
-    nb_vhost_statuses = {ch['label']: ch['value'] for ch in nbapi.virtualization.choices()['virtual-machine:status']}
+    vchoices = retry(pynetbox.core.query.RequestError)(nbapi.virtualization.choices)()
+    nb_vhost_statuses = {ch['label']: ch['value'] for ch in vchoices['virtual-machine:status']}
 
     nb_vhosts = {}
     # make a convenient dictionary of netbox hosts
-    for host in nbapi.virtualization.virtual_machines.filter(cluster=nb_cluster_id):
+    vmachines = retry(pynetbox.core.query.RequestError)(nbapi.virtualization.virtual_machines.filter)(cluster=nb_cluster_id)
+    for host in vmachines:
         nb_vhosts[host.name] = host
 
     results = Counter()
@@ -197,18 +228,19 @@ def sync_ganeti_to_netbox(netbox_api, netbox_token, cluster_name, ganeti_hosts, 
             logger.error("error added %s to netbox", ganeti_host_dict["name"])
     logger.info("added %s instances to netbox", results["add"])
 
-
+@retry(pynetbox.core.query.RequestError)
 def sync_ganeti_nodes_to_netbox(netbox_api, netbox_token, cluster_name, ganeti_nodes, dry_run):
     """Perform a sync between the Ganeti Node list and the Netbox API"""
     nbapi = pynetbox.api(netbox_api, token=netbox_token)
-    nb_cluster_id = nbapi.virtualization.clusters.get(name=cluster_name).id
+    nb_cluster_id = retry(pynetbox.core.query.RequestError)(nbapi.virtualization.clusters.get)(name=cluster_name).id
 
-    nb_cluster_nodes = {n.name: n for n in nbapi.dcim.devices.filter(cluster_id=nb_cluster_id)}
+    dcim_devices = retry(pynetbox.core.query.RequestError)(nbapi.dcim.devices.filter)(cluster_id=nb_cluster_id)
+    nb_cluster_nodes = {n.name: n for n in dcim_devices}
     results = Counter()
     for node in ganeti_nodes:
         if node not in nb_cluster_nodes.keys():
             try:
-                device = nbapi.dcim.devices.get(name=node)
+                device = retry(pynetbox.core.query.RequestError)(nbapi.dcim.devices.get)(name=node)
             except pynetbox.RequestError as e:
                 logger.error("an error was raised trying to retrieve host %s: %s", node, e)
                 continue
