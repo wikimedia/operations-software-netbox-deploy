@@ -16,3 +16,12 @@ ${PYTHON} ${NETBOX_ROOT}/netbox/manage.py migrate
 
 # Collect static files
 ${PYTHON} ${NETBOX_ROOT}/netbox/manage.py collectstatic --no-input
+
+# Delete any stale content types
+${PYTHON} ${NETBOX_ROOT}/netbox/manage.py remove_stale_contenttypes --no-input
+
+# Delete any expired user sessions
+${PYTHON} ${NETBOX_ROOT}/netbox/manage.py clearsessions
+
+# Clear all cached data
+${PYTHON} ${NETBOX_ROOT}/netbox/manage.py invalidate all
