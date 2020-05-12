@@ -9,13 +9,9 @@ set -o pipefail
 BASE=/deploy
 BUILD=${BASE}/build
 REQUIREMENTS=${BASE}/requirements.txt
-REQUIREMENTS_SCRIPTS=${BASE}/scripts/requirements.txt
-REQUIREMENTS_REPORTS=${BASE}/reports/requirements.txt
 REQUIREMENTS_FIXED=${BASE}/frozen-requirements.txt
 
 pip3 install -r "$REQUIREMENTS"
-pip3 install -r "$REQUIREMENTS_SCRIPTS"
-pip3 install -r "$REQUIREMENTS_REPORTS"
 pip3 freeze --local --requirement "$REQUIREMENTS_FIXED" > "$REQUIREMENTS_FIXED"
 # https://github.com/pypa/pip/issues/4668
 sed -i '/pkg-resources==0.0.0/d' "$REQUIREMENTS_FIXED"

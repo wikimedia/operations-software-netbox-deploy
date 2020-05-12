@@ -2,3 +2,15 @@
 django-auth-ldap
 swift
 django-storage-swift
+
+# scripts
+pynetbox~=4.0
+flask
+dnspython
+
+# reports
+google-api-python-client
+google-auth
+pymysql
+
+

@@ -1,6 +1,0 @@
-This directory, for now, just contains a requirements.txt that has
-extra requirements that reports need.
-
-See the reports repository for more information:
-
-https://gerrit.wikimedia.org/g/operations/software/netbox-reports/
