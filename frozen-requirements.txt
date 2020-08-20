@@ -1,16 +1,16 @@
 ## The following requirements were added by pip freeze:
 asgiref==3.2.10
-attrs==19.3.0
+attrs==20.1.0
 cachetools==4.1.1
 certifi==2020.6.20
-cffi==1.14.1
+cffi==1.14.2
 chardet==3.0.4
 click==7.1.2
 coreapi==2.3.3
 coreschema==0.0.4
 cryptography==3.0
 debtcollector==2.2.0
-Django==3.0.8
+Django==3.0.9
 django-auth-ldap==2.2.0
 django-cacheops==4.2
 django-cors-headers==3.2.1
@@ -29,12 +29,12 @@ django-timezone-field==4.0
 djangorestframework==3.11.0
 dnspython==2.0.0
 drf-yasg==1.17.1
-eventlet==0.25.2
+eventlet==0.26.1
 Flask==1.1.2
 funcy==1.14
-google-api-core==1.22.0
+google-api-core==1.22.1
 google-api-python-client==1.10.0
-google-auth==1.19.2
+google-auth==1.20.1
 google-auth-httplib2==0.0.4
 googleapis-common-protos==1.52.0
 greenlet==0.4.16
@@ -48,7 +48,7 @@ itsdangerous==1.1.0
 itypes==1.2.0
 Jinja2==2.11.1
 jsonschema==3.2.0
-keystoneauth1==4.2.0
+keystoneauth1==4.2.1
 lxml==4.5.2
 Markdown==3.2.1
 MarkupSafe==1.1.1
@@ -66,7 +66,7 @@ PasteDeploy==2.1.0
 pbr==5.4.5
 Pillow==7.1.1
 prometheus-client==0.8.0
-protobuf==3.12.2
+protobuf==3.13.0
 psycopg2-binary==2.8.5
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
@@ -83,7 +83,7 @@ python-magic==0.4.18
 python-swiftclient==3.10.0
 pytz==2020.1
 PyYAML==5.3.1
-redis==3.4.1
+redis==3.5.3
 requests==2.24.0
 rfc3986==1.4.0
 rq==1.5.0
