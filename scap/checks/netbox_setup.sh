@@ -14,6 +14,9 @@ find "${NETBOX_ROOT}" -name "*.pyc" -delete
 # Run database migration
 ${PYTHON} ${NETBOX_ROOT}/netbox/manage.py migrate
 
+# Regenerate network paths
+${PYTHON} ${NETBOX_ROOT}/netbox/manage.py trace_paths --no-input
+
 # Collect static files
 ${PYTHON} ${NETBOX_ROOT}/netbox/manage.py collectstatic --no-input
 
