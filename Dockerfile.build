@@ -1,6 +1,8 @@
 FROM docker-registry.wikimedia.org/python3-build-buster:latest
 
-RUN apt-get update && apt-get -y --no-install-recommends install build-essential libldap2-dev \
-    libsasl2-dev liberasurecode-dev rustc cargo libssl-dev && pip3 install --upgrade setuptools
+RUN apt-get update && \
+    apt-get -y --no-install-recommends install build-essential libldap2-dev \
+        libsasl2-dev liberasurecode-dev rustc cargo libssl-dev && \
+    pip3 install --upgrade pip setuptools
 
 COPY freeze_requirements.sh /bin/freeze
