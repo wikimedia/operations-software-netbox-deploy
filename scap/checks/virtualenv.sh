@@ -24,7 +24,7 @@ $PIP install \
     --find-links ${WHEEL_DIR} \
     --upgrade \
     --force-reinstall \
-    pip wheel distribute setuptools
+    pip wheel setuptools
 
 # Install or upgrade all requirements from wheel cache
 $PIP install \
