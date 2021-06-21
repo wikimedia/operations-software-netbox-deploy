@@ -17,6 +17,15 @@ virtualenv --python python3 $VENV || /bin/true
 
 # Extract the wheels
 (cd ${WHEEL_DIR} && tar --owner=$UID -zxvf "artifacts.${DISTRO}.tar.gz")
+
+# Install first pip dependencies from wheel cache
+$PIP install \
+    --no-index \
+    --find-links ${WHEEL_DIR} \
+    --upgrade \
+    --force-reinstall \
+    pip wheel distribute setuptools
+
 # Install or upgrade all requirements from wheel cache
 $PIP install \
     --no-index \
