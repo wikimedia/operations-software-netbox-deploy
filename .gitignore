@@ -1,6 +1,9 @@
 build
 artifacts/*.whl
 .docker_built
+Dockerfile.build
 scap/log/
 *~
 .\#*
+*.sw?
+frozen-requirements.txt
