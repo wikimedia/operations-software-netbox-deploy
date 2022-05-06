@@ -4,9 +4,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-BASE_DIR=/srv/deployment/netbox-dev
-VENV=${BASE_DIR}/venv
-DEPLOY_DIR=${BASE_DIR}/deploy
+VENV=/srv/deployment/netbox/venv
+DEPLOY_DIR=/srv/deployment/netbox/deploy
 WHEEL_DIR=${DEPLOY_DIR}/artifacts
 DISTRO=$(lsb_release -sc)
 REQUIREMENTS=${DEPLOY_DIR}/frozen-requirements-${DISTRO}.txt
