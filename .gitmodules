@@ -1,4 +1,4 @@
 [submodule "netbox"]
 	path = src
 	url = https://gerrit.wikimedia.org/r/operations/software/netbox
-	branch = v2.10.4-wmf2
+	branch = 2.11.x
