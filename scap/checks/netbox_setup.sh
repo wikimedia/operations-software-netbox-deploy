@@ -27,4 +27,4 @@ ${PYTHON} ${NETBOX_ROOT}/netbox/manage.py remove_stale_contenttypes --no-input
 ${PYTHON} ${NETBOX_ROOT}/netbox/manage.py clearsessions
 
 # Clear all cached data
-${PYTHON} ${NETBOX_ROOT}/netbox/manage.py invalidate all
+${PYTHON} ${NETBOX_ROOT}/netbox/manage.py clearcache
