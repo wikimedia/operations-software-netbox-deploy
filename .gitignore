@@ -7,3 +7,4 @@ scap/log/
 .\#*
 *.sw?
 frozen-requirements.txt
+env/

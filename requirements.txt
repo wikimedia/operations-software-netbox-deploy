@@ -2,7 +2,6 @@
 django-auth-ldap
 swift
 django-storage-swift
-markupsafe == 2.0.1
 
 # scripts
 pynetbox~=4.0
