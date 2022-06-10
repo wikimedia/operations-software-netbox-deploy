@@ -10,10 +10,10 @@ WHEEL_DIR=${DEPLOY_DIR}/artifacts
 REQUIREMENTS=${DEPLOY_DIR}/frozen-requirements.txt
 DISTRO=$(lsb_release -sc)
 PIP=${VENV}/bin/pip
-
 # Ensure that the virtual environment exists
 mkdir -p $VENV
 virtualenv --python python3 $VENV || /bin/true
+CA_BUNDLE=$("${VENV}/bin/python3" -m certifi)
 
 # Extract the wheels
 (cd ${WHEEL_DIR} && tar --owner=$UID -zxvf "artifacts.${DISTRO}.tar.gz")
@@ -33,3 +33,7 @@ $PIP install \
     --upgrade \
     --force-reinstall \
     --requirement $REQUIREMENTS
+
+# Update the ca bundle
+rm -vf "${CA_BUNDLE}"
+ln -sv /etc/ssl/certs/ca-certificates.crt "${CA_BUNDLE}"
