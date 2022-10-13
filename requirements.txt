@@ -3,6 +3,10 @@ django-auth-ldap
 swift
 django-storage-swift
 
+# See https://github.com/netbox-community/netbox/issues/9986
+# To be removed on future upgrade
+pytz==2022.1
+
 # scripts
 pynetbox~=4.0
 flask

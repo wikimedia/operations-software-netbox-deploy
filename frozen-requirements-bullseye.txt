@@ -109,7 +109,7 @@ python-magic==0.4.27
 python-swiftclient==4.1.0
 python3-openid==3.2.0
 pytkdocs==0.16.1
-pytz==2022.4
+pytz==2022.1
 PyYAML==6.0
 pyyaml_env_tag==0.1
 redis==4.3.4
