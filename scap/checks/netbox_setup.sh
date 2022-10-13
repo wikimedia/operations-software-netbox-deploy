@@ -25,6 +25,3 @@ ${PYTHON} ${NETBOX_ROOT}/netbox/manage.py remove_stale_contenttypes --no-input
 
 # Delete any expired user sessions
 ${PYTHON} ${NETBOX_ROOT}/netbox/manage.py clearsessions
-
-# Clear all cached data
-${PYTHON} ${NETBOX_ROOT}/netbox/manage.py invalidate all
