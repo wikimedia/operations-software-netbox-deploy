@@ -24,12 +24,10 @@ digraph G {
         spare -> failed [dir="both"];
         requested -> planned [weight=5];
         planned -> failed [dir="both"];
-        planned -> staged [weight=5, color="blue"];
-        staged -> active [weight=5, dir="both"];
-        staged -> failed [dir="both"];
+        planned -> active [weight=5, color="blue"];
         active -> decommissioned [weight=5, color="blue"];
-        active -> failed;
-        decommissioned -> staged;
+        active -> failed [dir="both"];
+        decommissioned -> planned;
         spare -> decommissioned [color="black;0.5:blue", dir="both"];
         decommissioned -> failed [color="blue", dir="back"];  // Defining it backward force it to be a separate line
         planned -> decommissioned [color="blue"];
@@ -37,8 +35,8 @@ digraph G {
         unracked -> recycled [weight=5];
 
         // Fix the ranking for better results
-        {rank = same; staged [group="main"]; failed;};
         {rank = same; planned [group="main"]; spare;};
+        {rank = same; active [group="main"]; failed;};
     }
 
     subgraph cluster_legend {  // Add a legend
