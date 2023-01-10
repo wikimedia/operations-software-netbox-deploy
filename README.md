@@ -9,7 +9,7 @@ dependencies.
 Assuming you have docker installed and your user is able to launch docker
 containers, whenever your requirements change you just need to run
 
-    make frozen_requirements.txt
+    make freeze
     make artifacts
 
 

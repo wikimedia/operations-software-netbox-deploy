@@ -1,0 +1,67 @@
+// Diagram to represent the transitions of the lifecyle of a server in the WMF Production environment
+// See https://wikitech.wikimedia.org/wiki/Server_Lifecycle
+// The wikiech file https://wikitech.wikimedia.org/wiki/File:Server_Lifecycle_Statuses.png
+// is generated from this file with: dot -T png server_lifecycle.dot -o Server_Lifecycle_Statuses.png
+
+digraph G {
+    rankdir = TB;
+    nodesep="1";
+    ranksep=".5";
+    concentrate=true;
+
+    subgraph cluster_transitions {  // Main graph
+        label = "Server Lifecycle Transitions";
+        color = "transparent";
+
+        // Explicit nodes with attributes, the others are implicit by the relationships
+        requested  [shape="box", group="main"];  // Start of the diagram
+        recycled [shape="box"];  // End of the diagram
+        active [group="main"];  // Needed to force the vertical alignement
+
+        // Allowed transitions (see also the legend at the bottom)
+        requested -> spare;
+        spare -> planned;
+        spare -> failed [dir="both"];
+        requested -> planned [weight=5];
+        planned -> failed [dir="both"];
+        planned -> active [weight=5, color="blue"];
+        active -> decommissioned [weight=5, color="blue"];
+        active -> failed [dir="both"];
+        decommissioned -> planned;
+        spare -> decommissioned [color="black;0.5:blue", dir="both"];
+        decommissioned -> failed [color="blue", dir="back"];  // Defining it backward force it to be a separate line
+        planned -> decommissioned [color="blue"];
+        decommissioned -> unracked [weight=5, color="blue"];
+        unracked -> recycled [weight=5];
+
+        // Fix the ranking for better results
+        {rank = same; planned [group="main"]; spare;};
+        {rank = same; active [group="main"]; failed;};
+    }
+
+    subgraph cluster_legend {  // Add a legend
+        rank = sink;
+        color = "transparent";
+        node [color="transparent"]
+        {rank=same; legend1; legend2}
+        legend1 [
+            label=<<table border="0" cellspacing="0" cellpadding="0" cellborder="0">
+                <tr><td align="right">Transitions legend  </td></tr>
+                <tr><td align="right"> </td></tr>
+                <tr><td align="right" port="i1">Default  </td></tr>
+                <tr><td align="right" port="i2">Automated in Netbox  </td></tr>
+            </table>>]
+        legend2 [
+            shape="point",
+            label=<<table border="0" cellspacing="0" cellpadding="0" cellborder="0">
+                <tr><td align="left"> </td></tr>
+                <tr><td align="left"> </td></tr>
+                <tr><td align="left" port="i1"> </td></tr>
+                <tr><td align="left" port="i2"> </td></tr>
+            </table>>]
+        legend1:i1 -> legend2:i1
+        legend1:i2 -> legend2:i2 [color="blue"]
+    }
+
+    recycled -> legend1 [style="invis"];  // Position the legend with an invisible link
+}

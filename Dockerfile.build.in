@@ -1,4 +1,4 @@
-FROM docker-registry.wikimedia.org/python3-build-buster:latest
+FROM __IMG_NAME__
 
 RUN apt-get update && \
     apt-get -y --no-install-recommends install build-essential libldap2-dev \

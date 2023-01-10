@@ -3,14 +3,17 @@ django-auth-ldap
 swift
 django-storage-swift
 
+# See https://github.com/netbox-community/netbox/issues/9986
+# To be removed on future upgrade
+pytz==2022.1
+
 # scripts
-pynetbox~=4.0
+pynetbox~=6.6
 flask
 dnspython<2.0.0
+wmflib
 
 # reports
 google-api-python-client
 google-auth
 pymysql
-
-
