@@ -1,0 +1,37 @@
+# Specialized make target for building the deployment artifacts / scap deploy
+# The virtual environment location.
+VENV ?= $(CURDIR)/venv
+# The distribution to create the virtualenv for. Auto-detection is the default
+DISTRO ?= $(shell lsb_release -sc)
+# Python version
+PYTHON_VERSION ?= $(shell /usr/bin/python3 -c 'from sys import version_info as v; print("%d.%d" % (v[0], v[1]))')
+# Get the CA Bundle
+CA_BUNDLE ?= $(shell $(VENV)/bin/python3 -m certifi)
+
+### Scap-related tasks ###
+# task deploy
+# This task will create the virtualenv if not present, unpack the wheels present
+# in the artifacts directory, install them and install the software inside the
+# virtualenv.
+# It will then link the Netbox configuration files installed by Puppet
+# And finally perform the steps to setup Netbox
+deploy: $(VENV)
+	cd $(CURDIR)/artifacts && tar --owner=$(shell id -u) -zxvf artifacts.$(DISTRO).tar.gz
+	$(VENV)/bin/pip install --no-deps $(CURDIR)/artifacts/pip-*.whl $(CURDIR)/artifacts/setuptools-*.whl \
+		$(CURDIR)/artifacts/wheel-*.whl
+	$(VENV)/bin/pip install --no-deps $(CURDIR)/artifacts/*.whl
+	rm -vf "$(CA_BUNDLE)"
+	ln -sv /etc/ssl/certs/ca-certificates.crt "$(CA_BUNDLE)"
+	ln -sv /etc/netbox/configuration.py $(CURDIR)/src/netbox/netbox/configuration.py
+	ln -sv /etc/netbox/ldap.py $(CURDIR)/src/netbox/netbox/ldap_config.py
+	ln -sv /etc/netbox/cas_configuration.py $(CURDIR)/src/netbox/netbox/cas_configuration.py
+	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py migrate
+	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py trace_paths --no-input
+	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py collectstatic --no-input
+	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py remove_stale_contenttypes --no-input
+	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py clearsessions
+
+# task venv
+# Creates the virtualenv if not present
+$(VENV):
+	virtualenv --python python3 --never-download $(VENV)
