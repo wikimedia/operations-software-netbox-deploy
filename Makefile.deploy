@@ -5,8 +5,6 @@ VENV ?= $(CURDIR)/venv
 DISTRO ?= $(shell lsb_release -sc)
 # Python version
 PYTHON_VERSION ?= $(shell /usr/bin/python3 -c 'from sys import version_info as v; print("%d.%d" % (v[0], v[1]))')
-# Get the CA Bundle
-CA_BUNDLE ?= $(shell $(VENV)/bin/python3 -m certifi)
 
 ### Scap-related tasks ###
 # task deploy
@@ -20,6 +18,7 @@ deploy: $(VENV)
 	$(VENV)/bin/pip install --no-deps $(CURDIR)/artifacts/pip-*.whl $(CURDIR)/artifacts/setuptools-*.whl \
 		$(CURDIR)/artifacts/wheel-*.whl
 	$(VENV)/bin/pip install --no-deps $(CURDIR)/artifacts/*.whl
+	$(eval CA_BUNDLE := $(shell $(VENV)/bin/python3 -m certifi))
 	rm -vf "$(CA_BUNDLE)"
 	ln -sv /etc/ssl/certs/ca-certificates.crt "$(CA_BUNDLE)"
 	ln -sv /etc/netbox/configuration.py $(CURDIR)/src/netbox/netbox/configuration.py
