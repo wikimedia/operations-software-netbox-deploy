@@ -27,10 +27,12 @@ deploy: $(VENV)
 	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py collectstatic --no-input
 	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py remove_stale_contenttypes --no-input
 	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py clearsessions
-	/usr/bin/sudo /usr/sbin/service uwsgi-netbox restart
-	/usr/bin/sudo /usr/sbin/service rq-netbox restart
 
 # task venv
 # Creates the virtualenv if not present
 $(VENV):
 	virtualenv --python python3 --never-download $(VENV)
+
+post-deploy:
+	/usr/bin/sudo /usr/sbin/service uwsgi-netbox restart
+	/usr/bin/sudo /usr/sbin/service rq-netbox restart
