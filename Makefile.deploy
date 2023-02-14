@@ -18,9 +18,7 @@ deploy: $(VENV)
 	$(VENV)/bin/pip install --no-deps $(CURDIR)/artifacts/pip-*.whl $(CURDIR)/artifacts/setuptools-*.whl \
 		$(CURDIR)/artifacts/wheel-*.whl
 	$(VENV)/bin/pip install --no-deps $(CURDIR)/artifacts/*.whl
-	$(eval CA_BUNDLE := $(shell $(VENV)/bin/python3 -m certifi))
-	rm -vf "$(CA_BUNDLE)"
-	ln -sv /etc/ssl/certs/ca-certificates.crt "$(CA_BUNDLE)"
+	ln -sfv /etc/ssl/certs/ca-certificates.crt "$$($(VENV)/bin/python3 -m certifi)"
 	ln -sv /etc/netbox/configuration.py $(CURDIR)/src/netbox/netbox/configuration.py
 	ln -sv /etc/netbox/ldap.py $(CURDIR)/src/netbox/netbox/ldap_config.py
 	ln -sv /etc/netbox/cas_configuration.py $(CURDIR)/src/netbox/netbox/cas_configuration.py
