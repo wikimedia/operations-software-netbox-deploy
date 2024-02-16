@@ -1,8 +1,12 @@
 FROM __IMG_NAME__
 
+USER root
+
 RUN apt-get update && \
     apt-get -y --no-install-recommends install build-essential libldap2-dev \
         libsasl2-dev liberasurecode-dev rustc cargo libssl-dev && \
     pip3 install --upgrade pip setuptools
+
+USER nobody
 
 COPY freeze_requirements.sh /bin/freeze
