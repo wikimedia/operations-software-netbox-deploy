@@ -1,5 +1,6 @@
 -r src/requirements.txt
 django-auth-ldap
+ApereoSocialPipeline
 swift
 django-storage-swift
 
