@@ -1,6 +1,6 @@
 # Specialized makefile for building the deployment artifacts
 # Debian version to build for
-DEBIAN_VER ?= bullseye
+DEBIAN_VER ?= bookworm
 echo:
 	echo ${DEBIAN_VER}
 # Global build dir

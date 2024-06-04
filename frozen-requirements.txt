@@ -1,1 +1,1 @@
-frozen-requirements-bullseye.txt
+frozen-requirements-bookworm.txt

@@ -1,21 +1,14 @@
 -r src/requirements.txt
 django-auth-ldap
 ApereoSocialPipeline
-# Requirement of OIDC support in Python-Social-Auth
-# to be removed after netbox upgrade to > 3.2.9
-python-jose
 
 swift
 django-storage-swift
 
-# https://github.com/netbox-community/netbox/issues/12415
-# To be removed on Netbox >= 3.5.1
-rq==1.13.0
-
 # scripts
-pynetbox~=6.6
+pynetbox
 flask
-dnspython<2.0.0
+dnspython
 wmflib
 
 # reports

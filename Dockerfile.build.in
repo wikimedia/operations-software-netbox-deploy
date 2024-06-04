@@ -4,8 +4,8 @@ USER root
 
 RUN apt-get update && \
     apt-get -y --no-install-recommends install build-essential libldap2-dev \
-        libsasl2-dev liberasurecode-dev rustc cargo libssl-dev && \
-    pip3 install --upgrade pip setuptools
+        libsasl2-dev liberasurecode-dev rustc cargo libssl-dev libpq-dev && \
+    pip3 install --break-system-package --upgrade pip setuptools
 
 USER nobody
 

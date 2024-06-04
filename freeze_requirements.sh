@@ -15,7 +15,6 @@ REQUIREMENTS_FIXED=${BASE}/frozen-requirements-${DISTRO}.txt
 
 virtualenv "$VENV"
 $PIP install -r "$REQUIREMENTS"
-$PIP install ${BASE}/plugins/ntc-netbox-plugin-metrics-ext
 $PIP list --format=freeze --local > "$REQUIREMENTS_FIXED"
 
 # https://github.com/pypa/pip/issues/4668
