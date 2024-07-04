@@ -1,20 +1,27 @@
+# Netbox requirements
 -r src/requirements.txt
+
+# Authentication
 django-auth-ldap
 ApereoSocialPipeline
 
+# Swift storage
 swift
 django-storage-swift
 
-# scripts
+# Scripts
 pynetbox
 flask
 dnspython
 wmflib
 
-# reports
+# Reports
 google-api-python-client
 google-auth
 pymysql
 
-# For git datasources integration
+# Git datasources integration
 dulwich
+
+# Netbox plugins
+netbox-more-metrics
