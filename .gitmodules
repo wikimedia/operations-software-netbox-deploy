@@ -1,4 +1,4 @@
 [submodule "netbox"]
 	path = src
-	url = https://github.com/netbox-community/netbox.git
+	url = https://gerrit.wikimedia.org/r/operations/software/netbox
 	branch = master
