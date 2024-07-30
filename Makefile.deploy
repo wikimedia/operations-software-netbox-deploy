@@ -23,6 +23,7 @@ deploy: $(VENV)
 	ln -sv /etc/netbox/ldap.py $(CURDIR)/src/netbox/netbox/ldap_config.py
 	ln -sv /etc/netbox/cas_configuration.py $(CURDIR)/src/netbox/netbox/cas_configuration.py
 	ln -sv /srv/deployment/netbox-extras/validators $(CURDIR)/src/netbox/validators
+	ln -sv /srv/deployment/netbox-extras/scripts_imports/wmf_scripts_imports $(VENV)/lib/python$(PYTHON_VERSION)/site-packages/wmf_scripts_imports
 	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py migrate
 	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py trace_paths --no-input
 	$(VENV)/bin/python3 $(CURDIR)/src/netbox/manage.py collectstatic --no-input
