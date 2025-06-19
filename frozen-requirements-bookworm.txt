@@ -127,7 +127,7 @@ requests-oauthlib==2.0.0
 rfc3986==2.0.0
 rich==14.0.0
 rpds-py==0.25.1
-rq==2.4.0
+rq==1.16.2
 rsa==4.9.1
 setuptools==66.1.1
 sgmllib3k==1.0.0

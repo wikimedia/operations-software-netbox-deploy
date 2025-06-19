@@ -25,3 +25,7 @@ dulwich
 
 # Netbox plugins
 netbox-more-metrics
+
+# RQ
+# TODO: REMOVE THIS DEPENDECY LOCK ON UPDATE TO NETBOX 4.3 OR LATER
+rq==1.16.2
