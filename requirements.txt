@@ -21,7 +21,8 @@ google-auth
 pymysql
 
 # Git datasources integration
-dulwich
+# TODO: For Netbox 4.0.X any version above 0.22.1 will break, but in different ways.
+dulwich==0.22.1
 
 # Netbox plugins
 netbox-more-metrics
