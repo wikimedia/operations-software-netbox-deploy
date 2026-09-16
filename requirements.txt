@@ -26,6 +26,8 @@ dulwich==0.22.1
 
 # Netbox plugins
 netbox-more-metrics
+# Netbox BGP compatibility matrix: https://github.com/netbox-community/netbox-bgp/blob/main/COMPATIBILITY.md
+netbox-bgp==0.13.3  # For netbox 4.0.x
 
 # RQ
 # TODO: REMOVE THIS DEPENDECY LOCK ON UPDATE TO NETBOX 4.3 OR LATER
