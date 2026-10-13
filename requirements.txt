@@ -19,6 +19,7 @@ wmflib
 google-api-python-client
 google-auth
 pymysql
+PySocks  # for google spreadsheet access
 
 # Git datasources integration
 # TODO: For Netbox 4.0.X any version above 0.22.1 will break, but in different ways.
