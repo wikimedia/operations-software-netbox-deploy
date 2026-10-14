@@ -33,3 +33,7 @@ netbox-bgp==0.13.3  # For netbox 4.0.x
 # RQ
 # TODO: REMOVE THIS DEPENDECY LOCK ON UPDATE TO NETBOX 4.3 OR LATER
 rq==1.16.2
+
+# Wheel upgrading from redis 6.2 to 8.1 causes RQ timeout issue
+# TODO: REMOVE THIS DEPENDECY LOCK ON UPDATE TO NETBOX 4.3 OR LATER
+redis==6.2.0
